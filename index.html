@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuroShift — Technologia, która przywraca ludzki balans</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --deep-navy: #040d1a;
+    --navy: #071428;
+    --navy-mid: #0a1e38;
+    --cyan: #00d4e8;
+    --cyan-dim: #00a8be;
+    --cyan-glow: rgba(0, 212, 232, 0.15);
+    --cyan-glow-strong: rgba(0, 212, 232, 0.35);
+    --teal: #0ff0c8;
+    --white: #f0f8ff;
+    --white-dim: rgba(240,248,255,0.65);
+    --white-faint: rgba(240,248,255,0.12);
+  }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+background: var(–deep-navy);
+color: var(–white);
+font-family: ‘DM Sans’, sans-serif;
+font-weight: 300;
+overflow-x: hidden;
+cursor: none;
+}
+
+/* CUSTOM CURSOR */
+.cursor {
+width: 12px; height: 12px;
+background: var(–cyan);
+border-radius: 50%;
+position: fixed; top: 0; left: 0;
+pointer-events: none; z-index: 9999;
+transform: translate(-50%,-50%);
+transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+mix-blend-mode: screen;
+}
+.cursor-ring {
+width: 36px; height: 36px;
+border: 1px solid var(–cyan-dim);
+border-radius: 50%;
+position: fixed; top: 0; left: 0;
+pointer-events: none; z-index: 9998;
+transform: translate(-50%,-50%);
+transition: transform 0.18s ease-out, width 0.2s, height 0.2s;
+opacity: 0.6;
+}
+body:hover .cursor { opacity: 1; }
+
+/* CANVAS PARTICLES */
+#particles-canvas {
+position: fixed; top: 0; left: 0;
+width: 100%; height: 100%;
+pointer-events: none; z-index: 0;
+opacity: 0.55;
+}
+
+/* NAV */
+nav {
+position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+padding: 20px 48px;
+display: flex; align-items: center; justify-content: space-between;
+background: linear-gradient(180deg, rgba(4,13,26,0.95) 0%, transparent 100%);
+backdrop-filter: blur(12px);
+}
+.nav-logo {
+font-family: ‘Syne’, sans-serif;
+font-size: 1.5rem; font-weight: 800;
+letter-spacing: -0.02em;
+}
+.nav-logo span { color: var(–cyan); }
+.nav-links { display: flex; gap: 36px; align-items: center; }
+.nav-links a {
+color: var(–white-dim); text-decoration: none;
+font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase;
+transition: color 0.2s;
+}
+.nav-links a:hover { color: var(–cyan); }
+.nav-cart {
+background: var(–cyan-glow);
+border: 1px solid var(–cyan-dim);
+color: var(–cyan);
+padding: 10px 22px; border-radius: 100px;
+font-family: ‘Syne’, sans-serif; font-weight: 700;
+font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase;
+cursor: pointer; transition: background 0.2s, box-shadow 0.2s;
+position: relative;
+}
+.nav-cart:hover { background: var(–cyan-glow-strong); box-shadow: 0 0 20px var(–cyan-glow-strong); }
+.cart-badge {
+position: absolute; top: -6px; right: -6px;
+background: var(–cyan); color: var(–deep-navy);
+width: 18px; height: 18px; border-radius: 50%;
+font-size: 0.65rem; font-weight: 800;
+display: flex; align-items: center; justify-content: center;
+display: none;
+}
+
+/* HERO */
+.hero {
+min-height: 100vh; position: relative; z-index: 1;
+display: flex; align-items: center;
+padding: 120px 48px 80px;
+overflow: hidden;
+}
+.hero::before {
+content: ‘’;
+position: absolute; top: -20%; left: -10%;
+width: 800px; height: 800px;
+background: radial-gradient(circle, rgba(0,212,232,0.08) 0%, transparent 70%);
+pointer-events: none;
+}
+.hero::after {
+content: ‘’;
+position: absolute; bottom: -10%; right: -5%;
+width: 600px; height: 600px;
+background: radial-gradient(circle, rgba(0,168,190,0.06) 0%, transparent 70%);
+pointer-events: none;
+}
+
+.hero-content {
+max-width: 640px; position: relative; z-index: 2;
+animation: fadeInUp 1s ease both;
+}
+.hero-label {
+display: inline-flex; align-items: center; gap: 8px;
+background: var(–cyan-glow); border: 1px solid rgba(0,212,232,0.3);
+padding: 6px 16px; border-radius: 100px;
+font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+color: var(–cyan); margin-bottom: 32px;
+}
+.hero-label::before {
+content: ‘’; width: 6px; height: 6px;
+background: var(–cyan); border-radius: 50%;
+animation: pulse 2s infinite;
+}
+h1 {
+font-family: ‘Syne’, sans-serif;
+font-size: clamp(3rem, 6vw, 5.5rem);
+font-weight: 800; line-height: 0.95;
+letter-spacing: -0.04em; margin-bottom: 28px;
+}
+h1 em { font-style: normal; color: var(–cyan); }
+.hero-sub {
+font-size: 1.1rem; line-height: 1.7;
+color: var(–white-dim); max-width: 480px;
+margin-bottom: 48px;
+}
+.hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+
+.btn-primary {
+background: linear-gradient(135deg, var(–cyan) 0%, var(–cyan-dim) 100%);
+color: var(–deep-navy);
+padding: 16px 36px; border-radius: 100px;
+font-family: ‘Syne’, sans-serif; font-weight: 700;
+font-size: 0.9rem; letter-spacing: 0.04em;
+border: none; cursor: pointer;
+transition: transform 0.2s, box-shadow 0.2s;
+text-decoration: none; display: inline-block;
+}
+.btn-primary:hover {
+transform: translateY(-2px);
+box-shadow: 0 12px 40px rgba(0,212,232,0.4);
+}
+.btn-ghost {
+background: transparent;
+color: var(–white-dim); border: 1px solid var(–white-faint);
+padding: 16px 36px; border-radius: 100px;
+font-family: ‘Syne’, sans-serif; font-weight: 600;
+font-size: 0.9rem; letter-spacing: 0.04em;
+cursor: pointer; transition: all 0.2s;
+text-decoration: none; display: inline-block;
+}
+.btn-ghost:hover { border-color: var(–cyan-dim); color: var(–cyan); }
+
+/* HERO VISUAL */
+.hero-visual {
+position: absolute; right: 0; top: 0; bottom: 0;
+width: 55%; z-index: 1;
+display: flex; align-items: center; justify-content: center;
+}
+.product-orb {
+width: 480px; height: 480px; position: relative;
+animation: float 6s ease-in-out infinite;
+}
+.orb-ring {
+position: absolute; border-radius: 50%;
+border: 1px solid rgba(0,212,232,0.12);
+top: 50%; left: 50%; transform: translate(-50%,-50%);
+animation: spinRing 20s linear infinite;
+}
+.orb-ring:nth-child(1) { width: 420px; height: 420px; }
+.orb-ring:nth-child(2) { width: 340px; height: 340px; animation-direction: reverse; animation-duration: 14s; }
+.orb-ring:nth-child(3) { width: 260px; height: 260px; border-color: rgba(0,212,232,0.2); }
+.orb-center {
+position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+width: 180px; height: 180px;
+}
+.brain-svg { width: 100%; height: 100%; filter: drop-shadow(0 0 30px var(–cyan)) drop-shadow(0 0 60px rgba(0,212,232,0.3)); }
+
+/* Floating data points */
+.data-card {
+position: absolute; background: rgba(7,20,40,0.85);
+border: 1px solid rgba(0,212,232,0.25); border-radius: 14px;
+padding: 14px 18px; backdrop-filter: blur(12px);
+font-size: 0.75rem; white-space: nowrap;
+}
+.data-card .val { font-family: ‘Syne’, sans-serif; font-size: 1.4rem; font-weight: 700; color: var(–cyan); }
+.data-card .lbl { color: var(–white-dim); font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.dc1 { top: 12%; right: 8%; animation: float 5s ease-in-out infinite 0.5s; }
+.dc2 { bottom: 18%; right: 2%; animation: float 5s ease-in-out infinite 1.2s; }
+.dc3 { top: 45%; left: -4%; animation: float 5s ease-in-out infinite 0.8s; }
+
+/* BENEFITS STRIP */
+.benefits-strip {
+position: relative; z-index: 2;
+display: flex; gap: 0;
+border-top: 1px solid var(–white-faint);
+border-bottom: 1px solid var(–white-faint);
+margin: 0 0 120px;
+overflow: hidden;
+}
+.benefit-item {
+flex: 1; padding: 32px 40px;
+border-right: 1px solid var(–white-faint);
+display: flex; align-items: center; gap: 20px;
+transition: background 0.3s;
+}
+.benefit-item:last-child { border-right: none; }
+.benefit-item:hover { background: var(–cyan-glow); }
+.benefit-icon {
+width: 44px; height: 44px; border-radius: 12px;
+background: var(–cyan-glow); border: 1px solid rgba(0,212,232,0.3);
+display: flex; align-items: center; justify-content: center;
+font-size: 1.2rem; flex-shrink: 0;
+}
+.benefit-title { font-family: ‘Syne’, sans-serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 3px; }
+.benefit-desc { font-size: 0.75rem; color: var(–white-dim); line-height: 1.5; }
+
+/* SECTIONS */
+section { position: relative; z-index: 2; }
+.section-inner { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
+
+.section-label {
+display: inline-block; font-size: 0.7rem; letter-spacing: 0.18em;
+text-transform: uppercase; color: var(–cyan); margin-bottom: 20px;
+}
+h2 {
+font-family: ‘Syne’, sans-serif;
+font-size: clamp(2rem, 4vw, 3.5rem);
+font-weight: 800; line-height: 1.05;
+letter-spacing: -0.03em; margin-bottom: 20px;
+}
+h2 em { font-style: normal; color: var(–cyan); }
+
+/* HOW IT WORKS */
+.how-section { padding: 120px 0; }
+.how-grid {
+display: grid; grid-template-columns: 1fr 1fr;
+gap: 80px; align-items: center; margin-top: 60px;
+}
+.steps { display: flex; flex-direction: column; gap: 32px; }
+.step {
+display: flex; gap: 24px; align-items: flex-start;
+padding: 28px; border-radius: 20px;
+border: 1px solid transparent;
+transition: border-color 0.3s, background 0.3s;
+cursor: default;
+}
+.step:hover { border-color: rgba(0,212,232,0.2); background: var(–cyan-glow); }
+.step-num {
+font-family: ‘Syne’, sans-serif; font-size: 2.5rem; font-weight: 800;
+color: rgba(0,212,232,0.15); flex-shrink: 0; line-height: 1;
+min-width: 48px;
+}
+.step h3 { font-family: ‘Syne’, sans-serif; font-weight: 700; font-size: 1.1rem; margin-bottom: 8px; }
+.step p { font-size: 0.88rem; color: var(–white-dim); line-height: 1.7; }
+
+.how-visual {
+background: linear-gradient(135deg, rgba(7,20,40,0.8), rgba(10,30,56,0.6));
+border: 1px solid rgba(0,212,232,0.15); border-radius: 28px;
+padding: 48px; position: relative; overflow: hidden;
+min-height: 500px; display: flex; flex-direction: column; justify-content: center;
+}
+.how-visual::before {
+content: ‘’; position: absolute; top: -50%; right: -30%;
+width: 400px; height: 400px;
+background: radial-gradient(circle, rgba(0,212,232,0.08) 0%, transparent 70%);
+}
+.biometric-display {
+display: flex; flex-direction: column; gap: 20px;
+position: relative; z-index: 1;
+}
+.bm-row { display: flex; align-items: center; gap: 16px; }
+.bm-label { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(–white-dim); min-width: 100px; }
+.bm-bar { flex: 1; height: 6px; background: var(–white-faint); border-radius: 100px; overflow: hidden; }
+.bm-fill {
+height: 100%; background: linear-gradient(90deg, var(–cyan-dim), var(–cyan));
+border-radius: 100px; animation: barFill 2s ease forwards;
+transform-origin: left;
+}
+.bm-val { font-family: ‘Syne’, sans-serif; font-size: 0.85rem; font-weight: 700; color: var(–cyan); min-width: 40px; text-align: right; }
+.bm-status {
+margin-top: 24px; padding: 16px 20px;
+background: rgba(0,212,232,0.08); border: 1px solid rgba(0,212,232,0.2); border-radius: 14px;
+display: flex; align-items: center; gap: 12px;
+}
+.bm-status .dot { width: 8px; height: 8px; background: var(–cyan); border-radius: 50%; animation: pulse 1.5s infinite; flex-shrink: 0; }
+.bm-status p { font-size: 0.78rem; color: var(–white-dim); line-height: 1.5; }
+.bm-status strong { color: var(–white); font-weight: 500; }
+
+/* PRODUCTS */
+.products-section { padding: 120px 0; }
+.products-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 56px; }
+.products-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+
+.product-card {
+background: linear-gradient(160deg, rgba(10,28,52,0.9), rgba(7,20,40,0.7));
+border: 1px solid rgba(0,212,232,0.1); border-radius: 24px;
+padding: 36px; position: relative; overflow: hidden;
+transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+cursor: pointer;
+}
+.product-card:hover {
+transform: translateY(-6px);
+border-color: rgba(0,212,232,0.35);
+box-shadow: 0 24px 60px rgba(0,0,0,0.4), 0 0 40px rgba(0,212,232,0.08);
+}
+.product-card::before {
+content: ‘’; position: absolute; top: -60px; right: -60px;
+width: 200px; height: 200px;
+background: radial-gradient(circle, rgba(0,212,232,0.06) 0%, transparent 70%);
+}
+.product-badge {
+display: inline-block; background: var(–cyan-glow); border: 1px solid rgba(0,212,232,0.35);
+color: var(–cyan); padding: 4px 12px; border-radius: 100px;
+font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase;
+margin-bottom: 24px;
+}
+.product-badge.popular { background: rgba(0,212,232,0.2); border-color: var(–cyan); }
+.product-icon {
+width: 80px; height: 80px; margin-bottom: 24px;
+background: var(–cyan-glow); border: 1px solid rgba(0,212,232,0.2);
+border-radius: 20px; display: flex; align-items: center; justify-content: center;
+font-size: 2rem;
+}
+.product-name { font-family: ‘Syne’, sans-serif; font-weight: 800; font-size: 1.3rem; margin-bottom: 8px; }
+.product-tagline { font-size: 0.82rem; color: var(–white-dim); line-height: 1.6; margin-bottom: 24px; }
+.product-features { list-style: none; margin-bottom: 32px; display: flex; flex-direction: column; gap: 10px; }
+.product-features li {
+font-size: 0.78rem; color: var(–white-dim); display: flex; align-items: center; gap: 10px;
+}
+.product-features li::before { content: ‘—’; color: var(–cyan); flex-shrink: 0; }
+.product-price {
+display: flex; align-items: baseline; gap: 6px; margin-bottom: 20px;
+}
+.price-amount { font-family: ‘Syne’, sans-serif; font-size: 2rem; font-weight: 800; }
+.price-period { font-size: 0.78rem; color: var(–white-dim); }
+.price-old { font-size: 0.88rem; color: var(–white-dim); text-decoration: line-through; margin-left: 8px; }
+
+.btn-add {
+width: 100%;
+background: linear-gradient(135deg, var(–cyan) 0%, var(–cyan-dim) 100%);
+color: var(–deep-navy);
+padding: 14px; border-radius: 12px;
+font-family: ‘Syne’, sans-serif; font-weight: 700;
+font-size: 0.85rem; letter-spacing: 0.04em;
+border: none; cursor: pointer;
+transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+position: relative; overflow: hidden;
+}
+.btn-add:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(0,212,232,0.35); }
+.btn-add:active { transform: scale(0.97); }
+.btn-add.added { background: linear-gradient(135deg, #0ff0c8, #00d4a8); }
+
+/* NEURO STATIONS */
+.stations-section { padding: 120px 0; }
+.stations-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 60px; }
+.station-card {
+background: linear-gradient(160deg, rgba(10,28,52,0.8), rgba(7,20,40,0.5));
+border: 1px solid rgba(0,212,232,0.1); border-radius: 24px;
+padding: 40px; transition: border-color 0.3s, background 0.3s;
+}
+.station-card:hover { border-color: rgba(0,212,232,0.25); background: linear-gradient(160deg, rgba(10,28,52,0.95), rgba(7,20,40,0.8)); }
+.station-icon {
+width: 56px; height: 56px; border-radius: 16px;
+background: var(–cyan-glow); border: 1px solid rgba(0,212,232,0.25);
+display: flex; align-items: center; justify-content: center;
+font-size: 1.5rem; margin-bottom: 24px;
+}
+.station-card h3 { font-family: ‘Syne’, sans-serif; font-weight: 700; font-size: 1.1rem; margin-bottom: 12px; }
+.station-card p { font-size: 0.85rem; color: var(–white-dim); line-height: 1.7; }
+
+/* TESTIMONIALS */
+.testi-section { padding: 120px 0; }
+.testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 60px; }
+.testi-card {
+background: linear-gradient(160deg, rgba(10,28,52,0.8), rgba(7,20,40,0.5));
+border: 1px solid rgba(0,212,232,0.1); border-radius: 24px; padding: 36px;
+}
+.stars { color: var(–cyan); font-size: 0.85rem; margin-bottom: 20px; letter-spacing: 2px; }
+.testi-card blockquote { font-size: 0.9rem; color: var(–white-dim); line-height: 1.7; margin-bottom: 24px; font-style: italic; }
+.testi-author { display: flex; align-items: center; gap: 12px; }
+.testi-avatar {
+width: 40px; height: 40px; border-radius: 50%;
+background: var(–cyan-glow); border: 1px solid rgba(0,212,232,0.3);
+display: flex; align-items: center; justify-content: center;
+font-size: 0.85rem; font-weight: 700; color: var(–cyan);
+font-family: ‘Syne’, sans-serif;
+}
+.testi-name { font-family: ‘Syne’, sans-serif; font-weight: 700; font-size: 0.85rem; }
+.testi-role { font-size: 0.72rem; color: var(–white-dim); }
+
+/* CTA */
+.cta-section { padding: 120px 0; }
+.cta-box {
+background: linear-gradient(135deg, rgba(0,212,232,0.08), rgba(7,20,40,0.4));
+border: 1px solid rgba(0,212,232,0.2); border-radius: 36px;
+padding: 80px; text-align: center; position: relative; overflow: hidden;
+}
+.cta-box::before {
+content: ‘’; position: absolute; top: -40%; left: 50%; transform: translateX(-50%);
+width: 600px; height: 400px;
+background: radial-gradient(ellipse, rgba(0,212,232,0.1) 0%, transparent 70%);
+}
+.cta-box h2 { max-width: 700px; margin: 0 auto 20px; }
+.cta-box p { color: var(–white-dim); max-width: 500px; margin: 0 auto 40px; line-height: 1.7; }
+
+/* FOOTER */
+footer {
+position: relative; z-index: 2;
+padding: 60px 48px 40px;
+border-top: 1px solid var(–white-faint);
+display: flex; align-items: center; justify-content: space-between;
+}
+.footer-logo { font-family: ‘Syne’, sans-serif; font-size: 1.3rem; font-weight: 800; }
+.footer-logo span { color: var(–cyan); }
+footer p { font-size: 0.75rem; color: var(–white-dim); }
+
+/* CART DRAWER */
+.cart-overlay {
+position: fixed; inset: 0; background: rgba(4,13,26,0.7);
+z-index: 200; opacity: 0; pointer-events: none;
+transition: opacity 0.3s; backdrop-filter: blur(4px);
+}
+.cart-overlay.open { opacity: 1; pointer-events: all; }
+.cart-drawer {
+position: fixed; top: 0; right: 0; bottom: 0;
+width: 420px; max-width: 100vw;
+background: var(–navy); z-index: 201;
+border-left: 1px solid rgba(0,212,232,0.15);
+transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+display: flex; flex-direction: column;
+}
+.cart-drawer.open { transform: translateX(0); }
+.cart-header {
+padding: 32px; border-bottom: 1px solid var(–white-faint);
+display: flex; align-items: center; justify-content: space-between;
+}
+.cart-header h3 { font-family: ‘Syne’, sans-serif; font-weight: 800; font-size: 1.2rem; }
+.cart-close {
+width: 36px; height: 36px; border-radius: 50%;
+background: var(–white-faint); border: none; cursor: pointer;
+color: var(–white); font-size: 1rem; display: flex; align-items: center; justify-content: center;
+transition: background 0.2s;
+}
+.cart-close:hover { background: var(–cyan-glow); color: var(–cyan); }
+.cart-items { flex: 1; overflow-y: auto; padding: 24px 32px; display: flex; flex-direction: column; gap: 20px; }
+.cart-empty { text-align: center; padding: 60px 0; color: var(–white-dim); }
+.cart-empty .empty-icon { font-size: 3rem; margin-bottom: 16px; opacity: 0.4; }
+.cart-empty p { font-size: 0.88rem; }
+.cart-item {
+display: flex; gap: 16px; align-items: center;
+padding: 16px; background: var(–white-faint);
+border: 1px solid rgba(0,212,232,0.1); border-radius: 16px;
+animation: fadeInUp 0.3s ease;
+}
+.cart-item-icon {
+width: 52px; height: 52px; border-radius: 12px;
+background: var(–cyan-glow); display: flex; align-items: center; justify-content: center;
+font-size: 1.4rem; flex-shrink: 0;
+}
+.cart-item-info { flex: 1; }
+.cart-item-name { font-family: ‘Syne’, sans-serif; font-weight: 700; font-size: 0.88rem; margin-bottom: 4px; }
+.cart-item-price { font-size: 0.78rem; color: var(–cyan); }
+.cart-item-remove {
+background: none; border: none; color: var(–white-dim); cursor: pointer; font-size: 0.85rem;
+transition: color 0.2s;
+}
+.cart-item-remove:hover { color: #ff4d6d; }
+.cart-footer { padding: 24px 32px; border-top: 1px solid var(–white-faint); }
+.cart-total {
+display: flex; justify-content: space-between; align-items: baseline;
+margin-bottom: 20px;
+}
+.cart-total span { font-size: 0.85rem; color: var(–white-dim); }
+.cart-total strong { font-family: ‘Syne’, sans-serif; font-size: 1.4rem; font-weight: 800; }
+.btn-checkout {
+width: 100%;
+background: linear-gradient(135deg, var(–cyan) 0%, var(–cyan-dim) 100%);
+color: var(–deep-navy);
+padding: 16px; border-radius: 14px;
+font-family: ‘Syne’, sans-serif; font-weight: 700;
+font-size: 0.9rem; border: none; cursor: pointer;
+transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-checkout:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,212,232,0.4); }
+
+/* TOAST */
+.toast {
+position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(80px);
+background: rgba(10,28,52,0.95); border: 1px solid rgba(0,212,232,0.35);
+color: var(–white); padding: 14px 24px; border-radius: 100px;
+font-family: ‘Syne’, sans-serif; font-weight: 600; font-size: 0.85rem;
+z-index: 300; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+backdrop-filter: blur(12px); white-space: nowrap;
+display: flex; align-items: center; gap: 10px;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast-icon { color: var(–cyan); }
+
+/* ANIMATIONS */
+@keyframes fadeInUp {
+from { opacity: 0; transform: translateY(30px); }
+to { opacity: 1; transform: translateY(0); }
+}
+@keyframes float {
+0%, 100% { transform: translateY(0); }
+50% { transform: translateY(-16px); }
+}
+@keyframes spinRing {
+from { transform: translate(-50%,-50%) rotate(0deg); }
+to { transform: translate(-50%,-50%) rotate(360deg); }
+}
+@keyframes pulse {
+0%, 100% { opacity: 1; transform: scale(1); }
+50% { opacity: 0.5; transform: scale(0.85); }
+}
+@keyframes barFill {
+from { width: 0 !important; }
+}
+
+/* SCROLL REVEAL */
+.reveal {
+opacity: 0; transform: translateY(40px);
+transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* TERMS MODAL */
+.terms-overlay {
+position: fixed; inset: 0; background: rgba(4,13,26,0.85);
+z-index: 400; opacity: 0; pointer-events: none;
+transition: opacity 0.35s; backdrop-filter: blur(8px);
+display: flex; align-items: center; justify-content: center;
+padding: 24px;
+}
+.terms-overlay.open { opacity: 1; pointer-events: all; }
+.terms-modal {
+background: var(–navy);
+border: 1px solid rgba(0,212,232,0.2); border-radius: 28px;
+width: 100%; max-width: 780px; max-height: 88vh;
+display: flex; flex-direction: column;
+transform: translateY(40px) scale(0.97);
+transition: transform 0.35s cubic-bezier(0.34,1.2,0.64,1);
+overflow: hidden;
+}
+.terms-overlay.open .terms-modal { transform: translateY(0) scale(1); }
+.terms-modal-header {
+padding: 32px 40px 24px;
+border-bottom: 1px solid var(–white-faint);
+display: flex; align-items: flex-start; justify-content: space-between;
+flex-shrink: 0;
+}
+.terms-modal-header h3 {
+font-family: ‘Syne’, sans-serif; font-weight: 800; font-size: 1.4rem;
+}
+.terms-modal-header .terms-date {
+font-size: 0.72rem; color: var(–cyan); letter-spacing: 0.1em;
+text-transform: uppercase; margin-top: 6px;
+}
+.terms-close {
+width: 38px; height: 38px; border-radius: 50%;
+background: var(–white-faint); border: none; cursor: pointer;
+color: var(–white); font-size: 1rem;
+display: flex; align-items: center; justify-content: center;
+flex-shrink: 0; transition: background 0.2s, color 0.2s;
+}
+.terms-close:hover { background: var(–cyan-glow); color: var(–cyan); }
+.terms-tabs {
+display: flex; gap: 0; padding: 0 40px;
+border-bottom: 1px solid var(–white-faint); flex-shrink: 0;
+overflow-x: auto;
+}
+.terms-tab {
+padding: 14px 20px; font-size: 0.75rem; letter-spacing: 0.08em;
+text-transform: uppercase; color: var(–white-dim);
+border: none; background: none; cursor: pointer;
+border-bottom: 2px solid transparent; margin-bottom: -1px;
+white-space: nowrap; transition: color 0.2s, border-color 0.2s;
+font-family: ‘Syne’, sans-serif; font-weight: 600;
+}
+.terms-tab.active { color: var(–cyan); border-bottom-color: var(–cyan); }
+.terms-tab:hover:not(.active) { color: var(–white); }
+.terms-body {
+overflow-y: auto; padding: 36px 40px; flex: 1;
+scrollbar-width: thin; scrollbar-color: rgba(0,212,232,0.3) transparent;
+}
+.terms-body::-webkit-scrollbar { width: 4px; }
+.terms-body::-webkit-scrollbar-thumb { background: rgba(0,212,232,0.3); border-radius: 2px; }
+.terms-panel { display: none; }
+.terms-panel.active { display: block; }
+.terms-panel h4 {
+font-family: ‘Syne’, sans-serif; font-weight: 700; font-size: 0.95rem;
+color: var(–cyan); margin: 32px 0 10px; letter-spacing: 0.04em;
+}
+.terms-panel h4:first-child { margin-top: 0; }
+.terms-panel p {
+font-size: 0.85rem; color: var(–white-dim); line-height: 1.8; margin-bottom: 14px;
+}
+.terms-panel ul {
+list-style: none; margin-bottom: 14px; display: flex; flex-direction: column; gap: 8px;
+}
+.terms-panel ul li {
+font-size: 0.83rem; color: var(–white-dim); line-height: 1.7;
+padding-left: 20px; position: relative;
+}
+.terms-panel ul li::before { content: ‘—’; color: var(–cyan); position: absolute; left: 0; }
+.terms-panel .highlight-box {
+background: var(–cyan-glow); border: 1px solid rgba(0,212,232,0.2);
+border-radius: 14px; padding: 18px 22px; margin: 20px 0;
+}
+.terms-panel .highlight-box p { margin: 0; font-size: 0.82rem; color: var(–white); }
+.terms-modal-footer {
+padding: 20px 40px; border-top: 1px solid var(–white-faint);
+display: flex; align-items: center; justify-content: space-between;
+flex-shrink: 0;
+}
+.terms-modal-footer p { font-size: 0.72rem; color: var(–white-dim); }
+.terms-modal-footer .btn-primary { padding: 12px 28px; font-size: 0.82rem; }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+nav { padding: 16px 24px; }
+.nav-links { display: none; }
+.hero { padding: 100px 24px 60px; }
+.hero-visual { display: none; }
+.benefits-strip { flex-direction: column; }
+.benefit-item { border-right: none; border-bottom: 1px solid var(–white-faint); }
+.how-grid, .products-grid, .stations-grid, .testi-grid { grid-template-columns: 1fr; }
+.products-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+.section-inner { padding: 0 24px; }
+.cta-box { padding: 48px 24px; }
+footer { flex-direction: column; gap: 16px; text-align: center; padding: 40px 24px; }
+.cart-drawer { width: 100vw; }
+}
+</style>
+
+</head>
+<body>
+
+<!-- Custom cursor -->
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Particle canvas -->
+
+<canvas id="particles-canvas"></canvas>
+
+<!-- CART OVERLAY + DRAWER -->
+
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-header">
+    <h3>Twój Koszyk</h3>
+    <button class="cart-close" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty" id="cartEmpty">
+      <div class="empty-icon">🧠</div>
+      <p>Koszyk jest pusty.<br>Dodaj pierwszy produkt NeuroShift.</p>
+    </div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total">
+      <span>Razem miesięcznie</span>
+      <strong id="cartTotal">0 zł</strong>
+    </div>
+    <button class="btn-checkout" onclick="checkout()">Przejdź do zamówienia →</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+
+<div class="toast" id="toast">
+  <span class="toast-icon">✓</span>
+  <span id="toastMsg">Dodano do koszyka</span>
+</div>
+
+<!-- NAV -->
+
+<nav>
+  <div class="nav-logo">Neuro<span>Shift</span></div>
+  <div class="nav-links">
+    <a href="#produkty">Produkty</a>
+    <a href="#jak-dziala">Jak działa</a>
+    <a href="#neuro-stacje">Neuro-Stacje</a>
+    <a href="#opinie">Opinie</a>
+    <a href="#" onclick="openTerms();return false;">Regulamin</a>
+  </div>
+  <button class="nav-cart" onclick="openCart()">
+    Koszyk
+    <div class="cart-badge" id="cartBadge">0</div>
+  </button>
+</nav>
+
+<!-- HERO -->
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-label">Pierwsza suplementacja phygital z AI</div>
+    <h1>Przywróć<br>ludzki <em>balans.</em></h1>
+    <p class="hero-sub">
+      NeuroShift analizuje Twoje dane biometryczne i każdego miesiąca komponuje unikalną mieszankę mikrokapsułek — stworzoną wyłącznie dla Ciebie.
+    </p>
+    <div class="hero-actions">
+      <a href="#produkty" class="btn-primary">Zacznij subskrypcję</a>
+      <a href="#jak-dziala" class="btn-ghost">Jak to działa?</a>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="product-orb">
+      <div class="orb-ring"></div>
+      <div class="orb-ring"></div>
+      <div class="orb-ring"></div>
+      <div class="orb-center">
+        <svg class="brain-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="48" fill="rgba(0,212,232,0.06)" stroke="rgba(0,212,232,0.25)" stroke-width="0.5"/>
+          <!-- Brain shape simplified -->
+          <path d="M50 20 C35 20 22 30 22 44 C22 52 26 58 32 62 C30 66 30 72 34 76 C38 80 44 80 48 78 L50 78 L52 78 C56 80 62 80 66 76 C70 72 70 66 68 62 C74 58 78 52 78 44 C78 30 65 20 50 20Z" fill="none" stroke="var(--cyan)" stroke-width="1.2" opacity="0.7"/>
+          <path d="M50 20 L50 78" stroke="var(--cyan)" stroke-width="0.8" opacity="0.4"/>
+          <path d="M30 40 C35 35 42 33 50 33 C58 33 65 35 70 40" stroke="var(--cyan)" stroke-width="0.8" fill="none" opacity="0.5"/>
+          <path d="M26 52 C30 48 37 46 44 47" stroke="var(--cyan)" stroke-width="0.8" fill="none" opacity="0.5"/>
+          <path d="M74 52 C70 48 63 46 56 47" stroke="var(--cyan)" stroke-width="0.8" fill="none" opacity="0.5"/>
+          <path d="M34 64 C38 60 45 58 50 59 C55 58 62 60 66 64" stroke="var(--cyan)" stroke-width="0.8" fill="none" opacity="0.5"/>
+          <circle cx="50" cy="50" r="3" fill="var(--cyan)" opacity="0.8"/>
+          <circle cx="38" cy="44" r="1.5" fill="var(--cyan)" opacity="0.6"/>
+          <circle cx="62" cy="44" r="1.5" fill="var(--cyan)" opacity="0.6"/>
+          <circle cx="34" cy="58" r="1.5" fill="var(--cyan)" opacity="0.6"/>
+          <circle cx="66" cy="58" r="1.5" fill="var(--cyan)" opacity="0.6"/>
+        </svg>
+      </div>
+
+```
+  <!-- Data Cards -->
+  <div class="data-card dc1">
+    <div class="val">87<small style="font-size:0.6rem">ms</small></div>
+    <div class="lbl">HRV Score</div>
+  </div>
+  <div class="data-card dc2">
+    <div class="val">92<small style="font-size:0.6rem">%</small></div>
+    <div class="lbl">Focus Index</div>
+  </div>
+  <div class="data-card dc3">
+    <div class="val">low</div>
+    <div class="lbl">Stress Level</div>
+  </div>
+</div>
+```
+
+  </div>
+</section>
+
+<!-- BENEFITS STRIP -->
+
+<div class="benefits-strip reveal">
+  <div class="benefit-item">
+    <div class="benefit-icon">🧬</div>
+    <div>
+      <div class="benefit-title">Hiper-personalizacja</div>
+      <div class="benefit-desc">AI analizuje Twoje biometryczne dane co miesiąc</div>
+    </div>
+  </div>
+  <div class="benefit-item">
+    <div class="benefit-icon">🎯</div>
+    <div>
+      <div class="benefit-title">Stan Flow na żądanie</div>
+      <div class="benefit-desc">Kognitywny autopilot oparty na nauce</div>
+    </div>
+  </div>
+  <div class="benefit-item">
+    <div class="benefit-icon">📦</div>
+    <div>
+      <div class="benefit-title">Dostawa pod drzwi</div>
+      <div class="benefit-desc">Spersonalizowany pakiet co 30 dni</div>
+    </div>
+  </div>
+  <div class="benefit-item">
+    <div class="benefit-icon">🔒</div>
+    <div>
+      <div class="benefit-title">Premium bezpieczeństwo</div>
+      <div class="benefit-desc">Kliniczne składniki, certyfikowane receptury</div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+
+<section class="how-section" id="jak-dziala">
+  <div class="section-inner">
+    <div class="reveal">
+      <span class="section-label">/ Jak to działa</span>
+      <h2>Twój osobisty<br><em>algorytm balansu</em></h2>
+    </div>
+    <div class="how-grid">
+      <div class="steps reveal">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div>
+            <h3>Podłącz aplikację</h3>
+            <p>Sparuj smartwatch lub urządzenie fitness. Aplikacja NeuroShift zbiera dane o śnie, HRV i poziomie stresu — pasywnie, w tle.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div>
+            <h3>AI komponuje Twoją mieszankę</h3>
+            <p>Nasz algorytm analizuje wzorce z ostatnich 30 dni i tworzy unikalną formułę mikrokapsułek dopasowaną do Twojego aktualnego stanu.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div>
+            <h3>Odbierasz i działasz</h3>
+            <p>Spersonalizowany pakiet trafia pod Twoje drzwi lub do Neuro-Lockera w Twoim biurowcu. Otwierasz zbliżeniowo telefonem.</p>
+          </div>
+        </div>
+      </div>
+      <div class="how-visual reveal">
+        <div class="biometric-display">
+          <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.8rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--cyan); margin-bottom:8px;">Twój profil biometryczny</div>
+          <div class="bm-row">
+            <span class="bm-label">Koncentracja</span>
+            <div class="bm-bar"><div class="bm-fill" style="width:87%"></div></div>
+            <span class="bm-val">87%</span>
+          </div>
+          <div class="bm-row">
+            <span class="bm-label">Jakość snu</span>
+            <div class="bm-bar"><div class="bm-fill" style="width:72%; animation-delay:0.2s"></div></div>
+            <span class="bm-val">72%</span>
+          </div>
+          <div class="bm-row">
+            <span class="bm-label">Poziom stresu</span>
+            <div class="bm-bar"><div class="bm-fill" style="width:24%; animation-delay:0.4s"></div></div>
+            <span class="bm-val">nisk.</span>
+          </div>
+          <div class="bm-row">
+            <span class="bm-label">HRV</span>
+            <div class="bm-bar"><div class="bm-fill" style="width:91%; animation-delay:0.6s"></div></div>
+            <span class="bm-val">91ms</span>
+          </div>
+          <div class="bm-status">
+            <div class="dot"></div>
+            <p>AI skomponował Twoją formułę na listopad: <strong>L-teanina 240mg, Ashwagandha KSM-66, Wit. B6 + B12, Lion's Mane 500mg.</strong> Dostawa w 48h.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+
+<section class="products-section" id="produkty">
+  <div class="section-inner">
+    <div class="products-header reveal">
+      <div>
+        <span class="section-label">/ Produkty</span>
+        <h2>Wybierz swój<br><em>plan NeuroShift</em></h2>
+      </div>
+    </div>
+    <div class="products-grid">
+      <div class="product-card reveal" style="transition-delay:0.1s">
+        <div class="product-badge">Starter</div>
+        <div class="product-icon">🧪</div>
+        <div class="product-name">NeuroShift Core</div>
+        <div class="product-tagline">Pierwsze kroki z personalizowaną suplementacją. Idealne do rozpoczęcia przygody z AI-wellness.</div>
+        <ul class="product-features">
+          <li>Miesięczny pakiet mikrokapsułek</li>
+          <li>Integracja z aplikacją (iOS/Android)</li>
+          <li>Podstawowa analiza HRV</li>
+          <li>Formułowanie przez AI co 30 dni</li>
+        </ul>
+        <div class="product-price">
+          <span class="price-amount">189 zł</span>
+          <span class="price-period">/ miesiąc</span>
+        </div>
+        <button class="btn-add" onclick="addToCart('NeuroShift Core', 189, '🧪')">Dodaj do koszyka</button>
+      </div>
+
+```
+  <div class="product-card reveal" style="border-color:rgba(0,212,232,0.3); transition-delay:0.2s">
+    <div class="product-badge popular">Najpopularniejszy</div>
+    <div class="product-icon" style="background:rgba(0,212,232,0.15); border-color:rgba(0,212,232,0.4)">🧠</div>
+    <div class="product-name">NeuroShift Focus</div>
+    <div class="product-tagline">Pełna personalizacja z zaawansowaną analizą biometryczną. Dla profesjonalistów wymagających szczytu wydajności.</div>
+    <ul class="product-features">
+      <li>Zaawansowana formuła mikrokapsułek</li>
+      <li>Pełna analiza: sen, HRV, stres, kortyzol</li>
+      <li>Dostęp do Neuro-Lockerów</li>
+      <li>Priorytetowa reformulacja tygodniowa</li>
+      <li>Liquid Shot raz w miesiącu</li>
+    </ul>
+    <div class="product-price">
+      <span class="price-amount">349 zł</span>
+      <span class="price-period">/ miesiąc</span>
+      <span class="price-old">420 zł</span>
+    </div>
+    <button class="btn-add" onclick="addToCart('NeuroShift Focus', 349, '🧠')">Dodaj do koszyka</button>
+  </div>
+
+  <div class="product-card reveal" style="transition-delay:0.3s">
+    <div class="product-badge">Elite</div>
+    <div class="product-icon">⚡</div>
+    <div class="product-name">NeuroShift Elite</div>
+    <div class="product-tagline">Absolutna personalizacja. Prywatny konsultant neuroscience, dedykowana formuła i nieograniczony dostęp do Neuro-Stacji.</div>
+    <ul class="product-features">
+      <li>Wszystko z planu Focus</li>
+      <li>Konsultacje z neuroscientist 2×/miesiąc</li>
+      <li>Nieograniczone Liquid Shoty w kioskach</li>
+      <li>Cotygodniowa reformulacja AI</li>
+      <li>Priorytetowa dostawa D+1</li>
+    </ul>
+    <div class="product-price">
+      <span class="price-amount">699 zł</span>
+      <span class="price-period">/ miesiąc</span>
+    </div>
+    <button class="btn-add" onclick="addToCart('NeuroShift Elite', 699, '⚡')">Dodaj do koszyka</button>
+  </div>
+</div>
+```
+
+  </div>
+</section>
+
+<!-- NEURO STATIONS -->
+
+<section class="stations-section" id="neuro-stacje">
+  <div class="section-inner">
+    <div class="reveal">
+      <span class="section-label">/ Neuro-Stacje</span>
+      <h2>Phygital kioski<br><em>w Twoim świecie</em></h2>
+      <p style="color:var(--white-dim); max-width:580px; margin-top:16px; line-height:1.7; font-size:0.95rem;">
+        Zainstalowane w biurowcach, lotniskach i centrach handlowych — Neuro-Stacje łączą diagnostykę biometryczną z natychmiastową personalizacją.
+      </p>
+    </div>
+    <div class="stations-grid">
+      <div class="station-card reveal" style="transition-delay:0.1s">
+        <div class="station-icon">⚡</div>
+        <h3>Biometryczna Diagnoza Instant</h3>
+        <p>Wbudowane sensory w 30 sekund skanują tętno, HRV i potliwość skóry. Lokalna AI natychmiast określa poziom stresu i zmęczenia układu nerwowego.</p>
+      </div>
+      <div class="station-card reveal" style="transition-delay:0.2s">
+        <div class="station-icon">🧪</div>
+        <h3>Vending 2.0 — Personalizowany Shot</h3>
+        <p>Maszyna na żywo miksuje jednorazowy liquid shot nootropowy. Precyzyjna dawka L-teaniny i witamin dopasowana do odczytów biometrycznych w czasie rzeczywistym.</p>
+      </div>
+      <div class="station-card reveal" style="transition-delay:0.3s">
+        <div class="station-icon">📱</div>
+        <h3>Pętla O2O — Offline to Online</h3>
+        <p>Kod QR na ekranie kiosku pobiera aplikację NeuroShift, a wynik ze skanowania automatycznie inicjuje Twój cyfrowy profil i lejek subskrypcyjny.</p>
+      </div>
+      <div class="station-card reveal" style="transition-delay:0.4s">
+        <div class="station-icon">🔐</div>
+        <h3>Neuro-Lockery Premium</h3>
+        <p>Eleganckie skrytki działające jak paczkomat premium. Odbierz miesięczny zestaw kapsułek zbliżeniowo przez telefon lub smartwatch — w drodze z biura.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+
+<section class="testi-section" id="opinie">
+  <div class="section-inner">
+    <div class="reveal">
+      <span class="section-label">/ Opinie</span>
+      <h2>Co mówią nasi<br><em>użytkownicy</em></h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card reveal" style="transition-delay:0.1s">
+        <div class="stars">★★★★★</div>
+        <blockquote>„Po 3 miesiącach z NeuroShift Focus mój HRV wzrósł o 34%. Pierwsze prezentacje bez stresu od lat. To nie jest suplement — to system."</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">MK</div>
+          <div>
+            <div class="testi-name">Marta K.</div>
+            <div class="testi-role">Product Director, FinTech</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal" style="transition-delay:0.2s">
+        <div class="stars">★★★★★</div>
+        <blockquote>„Sceptyk zmieniony w wyznawcę. Aplikacja faktycznie widzi korelację między moją dietą a snem. Formuła co miesiąc jest inna i to działa."</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">PT</div>
+          <div>
+            <div class="testi-name">Piotr T.</div>
+            <div class="testi-role">CTO, SaaS Startup</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal" style="transition-delay:0.3s">
+        <div class="stars">★★★★☆</div>
+        <blockquote>„Kiosk w biurowcu przy Rondzie Daszyńskiego to absolutny game-changer. Liquid shot przed spotkaniem z boardem. Polecam Elite."</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">AS</div>
+          <div>
+            <div class="testi-name">Anna S.</div>
+            <div class="testi-role">Managing Partner, Consulting</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+
+<section class="cta-section">
+  <div class="section-inner">
+    <div class="cta-box reveal">
+      <span class="section-label" style="display:block; margin-bottom:16px">/ Zacznij dziś</span>
+      <h2>Twoje ciało wysyła<br><em>sygnały. Czas słuchać.</em></h2>
+      <p>Dołącz do ponad 12 000 użytkowników, którzy przywrócili balans. Pierwsze 30 dni bez zobowiązań — anuluj kiedy chcesz.</p>
+      <a href="#produkty" class="btn-primary">Subskrybuj NeuroShift →</a>
+    </div>
+  </div>
+</section>
+
+<!-- TERMS MODAL -->
+
+<div class="terms-overlay" id="termsOverlay" onclick="handleTermsOverlayClick(event)">
+  <div class="terms-modal" id="termsModal">
+    <div class="terms-modal-header">
+      <div>
+        <h3>Regulamin Sklepu NeuroShift</h3>
+        <div class="terms-date">Obowiązuje od 1 stycznia 2025 · Wersja 3.2</div>
+      </div>
+      <button class="terms-close" onclick="closeTerms()">✕</button>
+    </div>
+    <div class="terms-tabs">
+      <button class="terms-tab active" onclick="switchTab('ogolne')">Postanowienia ogólne</button>
+      <button class="terms-tab" onclick="switchTab('subskrypcja')">Subskrypcja</button>
+      <button class="terms-tab" onclick="switchTab('dane')">Dane biometryczne</button>
+      <button class="terms-tab" onclick="switchTab('zwroty')">Zwroty i reklamacje</button>
+      <button class="terms-tab" onclick="switchTab('prywatnosc')">Prywatność</button>
+    </div>
+    <div class="terms-body">
+
+```
+  <!-- TAB: OGOLNE -->
+  <div class="terms-panel active" id="tab-ogolne">
+    <h4>§1. Definicje</h4>
+    <p>Niniejszy Regulamin określa zasady korzystania ze sklepu internetowego NeuroShift, dostępnego pod adresem neuroshift.pl, prowadzonego przez NeuroShift Sp. z o.o. z siedzibą w Warszawie (00-001), ul. Nowy Świat 42/10, NIP: 5213987654, KRS: 0000987654 (dalej: „Sprzedawca").</p>
+    <ul>
+      <li><strong style="color:var(--white)">Sklep</strong> — platforma sprzedażowa dostępna pod adresem neuroshift.pl</li>
+      <li><strong style="color:var(--white)">Klient</strong> — osoba fizyczna pełnoletnia lub przedsiębiorca dokonujący zakupów w Sklepie</li>
+      <li><strong style="color:var(--white)">Produkt</strong> — suplement diety w formie mikrokapsułek lub liquid shot, dostarczany w modelu subskrypcji D2C</li>
+      <li><strong style="color:var(--white)">Aplikacja NeuroShift</strong> — oprogramowanie mobilne umożliwiające integrację danych biometrycznych z algorytmem personalizacji</li>
+      <li><strong style="color:var(--white)">Neuro-Stacja</strong> — interaktywny kiosk phygital umieszczony w przestrzeniach publicznych, umożliwiający diagnostykę i odbiór produktów</li>
+      <li><strong style="color:var(--white)">Neuro-Locker</strong> — system skrytek premium służący do odbioru zamówionych produktów zbliżeniowo</li>
+    </ul>
+    <h4>§2. Warunki korzystania ze Sklepu</h4>
+    <p>Korzystanie ze Sklepu jest równoznaczne z akceptacją niniejszego Regulaminu. Złożenie zamówienia jest możliwe wyłącznie przez osoby pełnoletnie. Zamawiając subskrypcję po raz pierwszy, Klient zobowiązany jest do prawidłowego uzupełnienia profilu biometrycznego w Aplikacji — jest to warunek konieczny do personalizacji formuły.</p>
+    <div class="highlight-box">
+      <p>⚠️ Produkty NeuroShift to suplementy diety. Nie są lekami i nie zastępują leczenia. Przed rozpoczęciem stosowania skonsultuj się z lekarzem, jeśli przyjmujesz leki lub cierpisz na schorzenia przewlekłe.</p>
+    </div>
+    <h4>§3. Składanie zamówień</h4>
+    <p>Zamówienia można składać przez całą dobę, 7 dni w tygodniu, poprzez formularz na stronie lub Aplikację. Zamówienie jest wiążące po potwierdzeniu przez Sprzedawcę e-mailem na adres podany podczas rejestracji. Sprzedawca zastrzega sobie prawo do odmowy realizacji zamówienia w przypadku niedostępności produktów lub błędu technicznego systemu personalizacji.</p>
+    <h4>§4. Ceny i płatności</h4>
+    <p>Ceny podane na stronie Sklepu są cenami brutto i wyrażone w złotych polskich (PLN). Do zamówień wysyłanych na terenie Polski nie są doliczane dodatkowe opłaty za dostawę w ramach aktywnej subskrypcji. Dostępne metody płatności: karta płatnicza (Visa, Mastercard), BLIK, przelew bankowy, Apple Pay, Google Pay.</p>
+  </div>
+
+  <!-- TAB: SUBSKRYPCJA -->
+  <div class="terms-panel" id="tab-subskrypcja">
+    <h4>§5. Model subskrypcji</h4>
+    <p>Usługi NeuroShift dostępne są w trzech planach subskrypcji miesięcznej: Core (189 zł/mies.), Focus (349 zł/mies.) i Elite (699 zł/mies.). Subskrypcja odnawia się automatycznie każdego 1. dnia miesiąca, chyba że Klient ją anuluje przed upływem tego terminu.</p>
+    <h4>§6. Personalizacja formuły</h4>
+    <p>Formuła mikrokapsułek jest generowana przez algorytm AI na podstawie danych biometrycznych zebranych w ciągu ostatnich 30 dni. Sprzedawca nie gwarantuje identyczności składu pomiędzy kolejnymi dostawami — jest to zamierzona cecha usługi. Klient jest informowany o składzie bieżącej formuły w Aplikacji minimum 72 godziny przed wysyłką.</p>
+    <ul>
+      <li>Plan Core: analiza HRV i snu, reformulacja miesięczna</li>
+      <li>Plan Focus: pełna analiza biometryczna, dostęp do Neuro-Lockerów, reformulacja cotygodniowa</li>
+      <li>Plan Elite: wszystko z planu Focus + konsultacje z neuroscientist, reformulacja dzienna, dostawa D+1</li>
+    </ul>
+    <h4>§7. Zmiana i anulowanie subskrypcji</h4>
+    <p>Klient może zmienić plan subskrypcji w dowolnym momencie przez Aplikację. Zmiana jest skuteczna od następnego okresu rozliczeniowego. Anulowanie subskrypcji jest możliwe najpóźniej na 3 dni robocze przed datą odnowienia. Po anulowaniu Klient zachowuje dostęp do Aplikacji i historii danych przez 12 miesięcy.</p>
+    <div class="highlight-box">
+      <p>🔄 Pierwsze 30 dni subskrypcji objęte są gwarancją satysfakcji. Jeśli nie odczujesz różnicy, zwrócimy pełną kwotę bez pytań.</p>
+    </div>
+    <h4>§8. Neuro-Lokery i odbiór osobisty</h4>
+    <p>Klienci planów Focus i Elite mogą odbierać swoje miesięczne zestawy w Neuro-Lockerach zlokalizowanych w wybranych biurowcach, centrach handlowych i lotniskach. Odbiór następuje zbliżeniowo przez Aplikację lub smartwatch. Paczka pozostaje dostępna przez 5 dni roboczych od momentu powiadomienia — po tym czasie zostaje odesłana na adres główny Klienta.</p>
+  </div>
+
+  <!-- TAB: DANE -->
+  <div class="terms-panel" id="tab-dane">
+    <h4>§9. Zbieranie danych biometrycznych</h4>
+    <p>W celu personalizacji formuły Aplikacja NeuroShift przetwarza następujące kategorie danych biometrycznych: zmienność rytmu zatokowego (HRV), tętno spoczynkowe i aktywne, parametry snu (fazy, czas, jakość), dane o aktywności fizycznej oraz — w przypadku kiosków Neuro-Stacja — krótkotrwałe odczyty potliwości skóry (GSR).</p>
+    <div class="highlight-box">
+      <p>🔒 Dane biometryczne należą do Ciebie. NeuroShift nigdy nie sprzedaje ani nie udostępnia ich stronom trzecim w celach komercyjnych. Dane przetwarzane są wyłącznie lokalnie na urządzeniu i w zaszyfrowanym środowisku chmurowym NeuroShift.</p>
+    </div>
+    <h4>§10. Dane z kiosków Neuro-Stacja</h4>
+    <p>Skan biometryczny wykonany w kiosku jest anonimowy do momentu zeskanowania kodu QR i założenia konta. Dane z sesji kiosku przechowywane są lokalnie przez maksymalnie 15 minut, a następnie bezpowrotnie usuwane lub — za zgodą Klienta — importowane do jego profilu cyfrowego.</p>
+    <h4>§11. Integracje zewnętrzne</h4>
+    <p>Aplikacja NeuroShift integruje się z systemami: Apple Health, Google Fit, Garmin Connect, Whoop, Oura Ring. Integracja wymaga wyraźnej zgody Klienta i może być cofnięta w dowolnym momencie z poziomu ustawień Aplikacji. Cofnięcie zgody nie wpływa na aktywną subskrypcję, lecz obniża precyzję personalizacji formuły.</p>
+    <h4>§12. Przechowywanie i retencja danych</h4>
+    <p>Dane biometryczne przechowywane są przez okres trwania subskrypcji oraz 12 miesięcy po jej zakończeniu, chyba że Klient zażąda ich wcześniejszego usunięcia. Prawo do bycia zapomnianym realizowane jest w ciągu 30 dni od złożenia wniosku przez Aplikację lub e-mail: privacy@neuroshift.pl.</p>
+  </div>
+
+  <!-- TAB: ZWROTY -->
+  <div class="terms-panel" id="tab-zwroty">
+    <h4>§13. Prawo odstąpienia od umowy</h4>
+    <p>Zgodnie z ustawą z dnia 30 maja 2014 r. o prawach konsumenta, Klient ma prawo odstąpić od umowy w ciągu 14 dni kalendarzowych od daty otrzymania pierwszej przesyłki, bez podania przyczyny. Prawo odstąpienia nie przysługuje w odniesieniu do produktów spersonalizowanych, których formuła została wygenerowana na indywidualne zamówienie biometryczne i których opakowanie zostało otwarte.</p>
+    <div class="highlight-box">
+      <p>✨ Gwarancja Balansu 30 dni: jeśli po pierwszym pełnym miesiącu stosowania formuły nie odczujesz subiektywnej poprawy w zakresie koncentracji, snu lub poziomu stresu, zwrócimy 100% opłaty subskrypcyjnej. Wystarczy kontakt przez Aplikację.</p>
+    </div>
+    <h4>§14. Procedura zwrotu</h4>
+    <ul>
+      <li>Zgłoś chęć zwrotu przez Aplikację lub e-mail: returns@neuroshift.pl</li>
+      <li>Otrzymasz etykietę zwrotną na wskazany adres e-mail w ciągu 24 godzin</li>
+      <li>Odeślij produkt w oryginalnym opakowaniu w ciągu 7 dni od zgłoszenia</li>
+      <li>Zwrot środków nastąpi w ciągu 5-7 dni roboczych na konto użyte do płatności</li>
+    </ul>
+    <h4>§15. Reklamacje</h4>
+    <p>Reklamacje dotyczące wad produktu lub niezgodności formuły z profilem biometrycznym należy zgłaszać przez Aplikację w sekcji „Mój pakiet → Zgłoś problem" lub na adres: reklamacje@neuroshift.pl. Sprzedawca rozpatruje reklamacje w ciągu 14 dni roboczych. W przypadku reklamacji dotyczącej personalizacji, algorytm AI generuje korektę formuły w trybie priorytetowym.</p>
+    <h4>§16. Uszkodzenia w transporcie</h4>
+    <p>W przypadku otrzymania uszkodzonej przesyłki Klient powinien niezwłocznie, nie później niż w ciągu 48 godzin, zgłosić ten fakt przez Aplikację wraz z dokumentacją fotograficzną. Sprzedawca wymienia produkt lub zwraca środki bez zbędnych formalności.</p>
+  </div>
+
+  <!-- TAB: PRYWATNOSC -->
+  <div class="terms-panel" id="tab-prywatnosc">
+    <h4>§17. Administrator danych osobowych</h4>
+    <p>Administratorem danych osobowych Klientów jest NeuroShift Sp. z o.o. z siedzibą w Warszawie. Dane przetwarzane są zgodnie z Rozporządzeniem RODO (UE) 2016/679. Inspektor Ochrony Danych: iod@neuroshift.pl.</p>
+    <h4>§18. Cel i podstawa prawna przetwarzania</h4>
+    <ul>
+      <li>Realizacja umowy subskrypcji — art. 6 ust. 1 lit. b RODO</li>
+      <li>Personalizacja formuły na podstawie danych biometrycznych — zgoda (art. 9 ust. 2 lit. a RODO)</li>
+      <li>Marketing bezpośredni produktów własnych — uzasadniony interes (art. 6 ust. 1 lit. f RODO)</li>
+      <li>Rozpatrywanie reklamacji i zwrotów — obowiązek prawny (art. 6 ust. 1 lit. c RODO)</li>
+    </ul>
+    <h4>§19. Prawa Klienta</h4>
+    <p>Klient ma prawo do dostępu do swoich danych, ich sprostowania, usunięcia (prawo do bycia zapomnianym), ograniczenia przetwarzania, przenoszenia danych oraz wniesienia sprzeciwu. Wszelkie wnioski należy kierować na adres: privacy@neuroshift.pl. Klient ma prawo wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych.</p>
+    <div class="highlight-box">
+      <p>🧬 Dane biometryczne to dane szczególnej kategorii. Przetwarzamy je wyłącznie na podstawie Twojej wyraźnej zgody, którą możesz cofnąć w dowolnym momencie w Aplikacji → Ustawienia → Prywatność.</p>
+    </div>
+    <h4>§20. Postanowienia końcowe</h4>
+    <p>Sprzedawca zastrzega sobie prawo do zmiany Regulaminu z zachowaniem 14-dniowego okresu powiadamiania Klientów drogą e-mailową. W sprawach nieuregulowanych niniejszym Regulaminem zastosowanie mają przepisy Kodeksu cywilnego oraz ustawy o prawach konsumenta. Sądem właściwym dla sporów jest sąd właściwy dla siedziby Sprzedawcy, z zastrzeżeniem przepisów o właściwości dla Konsumentów.</p>
+  </div>
+
+</div>
+<div class="terms-modal-footer">
+  <p>Pytania? Napisz do nas: legal@neuroshift.pl</p>
+  <button class="btn-primary" onclick="closeTerms()">Rozumiem i akceptuję</button>
+</div>
+```
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+
+<footer>
+  <div class="footer-logo">Neuro<span>Shift</span></div>
+  <p>© 2025 NeuroShift. Technologia, która przywraca ludzki balans.</p>
+  <p style="font-size:0.75rem; color:var(--white-dim)">
+    <a href="#" onclick="openTerms();return false;" style="color:var(--cyan-dim); text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='var(--cyan)'" onmouseout="this.style.color='var(--cyan-dim)'">Regulamin Sklepu</a>
+    &nbsp;·&nbsp;
+    <a href="#" onclick="switchTab('prywatnosc');openTerms();return false;" style="color:var(--cyan-dim); text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='var(--cyan)'" onmouseout="this.style.color='var(--cyan-dim)'">Polityka Prywatności</a>
+    &nbsp;·&nbsp;
+    <span style="color:var(--white-faint)">Suplementy diety. Nie zastępują leczenia.</span>
+  </p>
+</footer>
+
+<script>
+// CURSOR
+const cursor = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx+'px'; cursor.style.top = my+'px'; });
+(function animRing() { rx += (mx-rx)*0.12; ry += (my-ry)*0.12; cursorRing.style.left = rx+'px'; cursorRing.style.top = ry+'px'; requestAnimationFrame(animRing); })();
+document.querySelectorAll('a,button,.product-card,.step,.station-card').forEach(el => {
+  el.addEventListener('mouseenter', () => { cursor.style.width='20px'; cursor.style.height='20px'; cursorRing.style.width='52px'; cursorRing.style.height='52px'; });
+  el.addEventListener('mouseleave', () => { cursor.style.width='12px'; cursor.style.height='12px'; cursorRing.style.width='36px'; cursorRing.style.height='36px'; });
+});
+
+// PARTICLES
+const canvas = document.getElementById('particles-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize(); window.addEventListener('resize', resize);
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random()*W; this.y = Math.random()*H;
+    this.vx = (Math.random()-0.5)*0.3; this.vy = (Math.random()-0.5)*0.3;
+    this.r = Math.random()*1.5+0.3; this.alpha = Math.random()*0.5+0.1;
+    this.color = Math.random()>0.5 ? '0,212,232' : '0,240,200';
+  }
+  update() { this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>W||this.y<0||this.y>H) this.reset(); }
+  draw() { ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fillStyle=`rgba(${this.color},${this.alpha})`; ctx.fill(); }
+}
+for(let i=0;i<120;i++) particles.push(new Particle());
+function drawConnections() {
+  for(let i=0;i<particles.length;i++) {
+    for(let j=i+1;j<particles.length;j++) {
+      const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<100) { ctx.beginPath(); ctx.moveTo(particles[i].x,particles[i].y); ctx.lineTo(particles[j].x,particles[j].y); ctx.strokeStyle=`rgba(0,212,232,${0.08*(1-d/100)})`; ctx.lineWidth=0.5; ctx.stroke(); }
+    }
+  }
+}
+function animParticles() { ctx.clearRect(0,0,W,H); drawConnections(); particles.forEach(p=>{p.update();p.draw();}); requestAnimationFrame(animParticles); }
+animParticles();
+
+// SCROLL REVEAL
+const reveals = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver((entries) => { entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }); }, { threshold: 0.1 });
+reveals.forEach(r => obs.observe(r));
+
+// TERMS MODAL
+function openTerms() {
+  document.getElementById('termsOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeTerms() {
+  document.getElementById('termsOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function handleTermsOverlayClick(e) {
+  if(e.target === document.getElementById('termsOverlay')) closeTerms();
+}
+function switchTab(id) {
+  document.querySelectorAll('.terms-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.terms-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  const tabs = ['ogolne','subskrypcja','dane','zwroty','prywatnosc'];
+  const idx = tabs.indexOf(id);
+  document.querySelectorAll('.terms-tab')[idx].classList.add('active');
+  document.querySelector('.terms-body').scrollTop = 0;
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeTerms(); });
+
+let cart = [];
+
+function addToCart(name, price, icon) {
+  const existing = cart.find(i => i.name===name);
+  if(existing) { existing.qty++; } else { cart.push({name, price, icon, qty:1}); }
+  updateCart();
+  showToast(`${name} dodano do koszyka`);
+  const btn = event.target;
+  btn.textContent='✓ Dodano!'; btn.classList.add('added');
+  setTimeout(()=>{ btn.textContent='Dodaj do koszyka'; btn.classList.remove('added'); }, 2000);
+}
+
+function removeFromCart(idx) {
+  cart.splice(idx,1); updateCart();
+}
+
+function updateCart() {
+  const badge = document.getElementById('cartBadge');
+  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const count = cart.reduce((s,i)=>s+i.qty,0);
+  badge.textContent = count;
+  badge.style.display = count>0 ? 'flex' : 'none';
+  document.getElementById('cartTotal').textContent = total.toLocaleString('pl-PL')+ ' zł';
+  const itemsEl = document.getElementById('cartItems');
+  const emptyEl = document.getElementById('cartEmpty');
+  if(cart.length===0) { emptyEl.style.display='block'; itemsEl.innerHTML=''; itemsEl.appendChild(emptyEl); return; }
+  emptyEl.style.display='none';
+  const existing = itemsEl.querySelectorAll('.cart-item');
+  existing.forEach(e=>e.remove());
+  cart.forEach((item,idx) => {
+    const el = document.createElement('div'); el.className='cart-item';
+    el.innerHTML=`<div class="cart-item-icon">${item.icon}</div><div class="cart-item-info"><div class="cart-item-name">${item.name}${item.qty>1?` ×${item.qty}`:''}</div><div class="cart-item-price">${(item.price*item.qty).toLocaleString('pl-PL')} zł / mies.</div></div><button class="cart-item-remove" onclick="removeFromCart(${idx})">✕</button>`;
+    itemsEl.appendChild(el);
+  });
+}
+
+function openCart() { document.getElementById('cartOverlay').classList.add('open'); document.getElementById('cartDrawer').classList.add('open'); }
+function closeCart() { document.getElementById('cartOverlay').classList.remove('open'); document.getElementById('cartDrawer').classList.remove('open'); }
+
+function checkout() {
+  if(cart.length===0) { showToast('Koszyk jest pusty'); return; }
+  showToast('Przekierowanie do płatności Stripe…');
+  setTimeout(()=>alert('W pełnej wersji: przekierowanie do Stripe Checkout.\n\nTwoje zamówienie:\n'+cart.map(i=>`• ${i.name}: ${i.price*i.qty} zł`).join('\n')), 1000);
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast'); document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show'); clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2800);
+}
+</script>
+
+</body>
+</html>
